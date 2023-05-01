@@ -47,15 +47,29 @@ class ServiceTicketView(ViewSet):
         Returns:
             Response: JSON serialized representation of newly created service ticket
         """
+        # Select the targeted ticket using pk
         new_ticket = ServiceTicket()
+        # Get the employee id from the client request
         new_ticket.customer = Customer.objects.get(user=request.auth.user)
+        # Select the employee from the database using that id
         new_ticket.description = request.data['description']
+        # Assign the Employee instance to the employee property of the ticket
         new_ticket.emergency = request.data['emergency']
+        # Save the updated ticket
         new_ticket.save()
 
         serialized = ServiceTicketSerializer(new_ticket)
 
         return Response(serialized.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, pk=None):
+        """Handle PUT requests for tickets"""
+        ticket = ServiceTicket.objects.get(pk=pk)
+        employee_id = request.data['employee']
+        assigned_employee = Employee.objects.get(pk=employee_id)
+        ticket.employee = assigned_employee
+        ticket.save()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
 class TicketEmployeeSerializer(serializers.ModelSerializer):
