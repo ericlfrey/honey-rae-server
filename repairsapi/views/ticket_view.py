@@ -66,8 +66,10 @@ class ServiceTicketView(ViewSet):
         """Handle PUT requests for tickets"""
         ticket = ServiceTicket.objects.get(pk=pk)
         employee_id = request.data['employee']
+        date_completed = request.data['date_completed']
         assigned_employee = Employee.objects.get(pk=employee_id)
         ticket.employee = assigned_employee
+        ticket.date_completed = date_completed
         ticket.save()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
